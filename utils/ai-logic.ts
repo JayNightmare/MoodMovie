@@ -1,14 +1,16 @@
 import { UserResponse, Movie } from "../App";
 import { Question } from "../types/questions";
-import { projectId, publicAnonKey } from "./supabase/info";
+// import { projectId, publicAnonKey } from "./supabase/info";
 
-const supabaseProjectId = projectId
-    ? projectId
-    : import.meta.env.VITE_SUPABASE_PROJECT_ID;
+// const supabaseProjectId = projectId
+//     ? projectId
+//     : import.meta.env.VITE_SUPABASE_PROJECT_ID;
+const supabaseProjectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 
-const supabaseAnonKey = publicAnonKey
-    ? publicAnonKey
-    : import.meta.env.VITE_SUPABASE_ANON_KEY;
+// const supabaseAnonKey = publicAnonKey
+//     ? publicAnonKey
+//     : import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Fallback question set for when API fails entirely or returns malformed data
 const fallbackQuestions: Question[] = [
