@@ -1,0 +1,63 @@
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "JayNightmare"  # Replace with your GitHub username
+    assignees:
+      - "JayNightmare"  # Replace with your GitHub username
+    commit-message:
+      prefix: "⬆️"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    
+    # Group React-related updates
+    groups:
+      react:
+        patterns:
+          - "react*"
+        
+      testing:
+        patterns:
+          - "@testing-library/*"
+          - "jest*"
+        
+      build-tools:
+        patterns:
+          - "webpack*"
+          - "babel*"
+          - "@babel/*"
+          - "postcss*"
+          - "autoprefixer"
+        
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+    
+    # Ignore certain packages if needed
+    ignore:
+      - dependency-name: "react"
+        versions: ["< 18.0.0"]
+      - dependency-name: "react-dom"
+        versions: ["< 18.0.0"]
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "🔧"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "automated"

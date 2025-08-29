@@ -2,6 +2,14 @@ import { UserResponse, Movie } from "../App";
 import { Question } from "../types/questions";
 import { projectId, publicAnonKey } from "./supabase/info";
 
+const supabaseProjectId = projectId
+    ? projectId
+    : Deno.env.get("VITE_SUPABASE_PROJECT_ID");
+
+const supabaseAnonKey = publicAnonKey
+    ? publicAnonKey
+    : Deno.env.get("VITE_SUPABASE_ANON_KEY");
+
 // Fallback question set for when API fails entirely or returns malformed data
 const fallbackQuestions: Question[] = [
     {
@@ -89,12 +97,12 @@ export async function getQuestionSet(
 ): Promise<Question[]> {
     try {
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/next-question`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/next-question`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({ responses }),
             }
@@ -136,11 +144,11 @@ export async function getNextQuestion(
 
         // First test server health
         const healthResponse = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/health`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/health`,
             {
                 method: "GET",
                 headers: {
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
             }
         );
@@ -158,12 +166,12 @@ export async function getNextQuestion(
         console.log("Server health:", healthData);
 
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/next-question`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/next-question`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({ responses }),
             }
@@ -212,12 +220,12 @@ export async function shouldStopQuestioning(
         console.log("Checking if should stop for responses:", responses);
 
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/should-stop`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/should-stop`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({ responses }),
             }
@@ -256,12 +264,12 @@ export async function getMovieRecommendations(
         console.log("Getting movie recommendations for responses:", responses);
 
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/recommendations`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/recommendations`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({ responses }),
             }
@@ -311,12 +319,12 @@ export async function submitMovieReview(
 ): Promise<boolean> {
     try {
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/submit-review`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/submit-review`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({ movie, rating, review }),
             }
@@ -351,12 +359,12 @@ export async function testServerConnection(): Promise<{
         console.log("Testing server connection...");
 
         const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-4bf7affd/test`,
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/test`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${publicAnonKey}`,
+                    Authorization: `Bearer ${supabaseAnonKey}`,
                 },
                 body: JSON.stringify({
                     test: true,
