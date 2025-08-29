@@ -4,11 +4,11 @@ import { projectId, publicAnonKey } from "./supabase/info";
 
 const supabaseProjectId = projectId
     ? projectId
-    : Deno.env.get("VITE_SUPABASE_PROJECT_ID");
+    : import.meta.env.VITE_SUPABASE_PROJECT_ID;
 
 const supabaseAnonKey = publicAnonKey
     ? publicAnonKey
-    : Deno.env.get("VITE_SUPABASE_ANON_KEY");
+    : import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Fallback question set for when API fails entirely or returns malformed data
 const fallbackQuestions: Question[] = [
@@ -301,8 +301,9 @@ export async function getMovieRecommendations(
         console.log("Using fallback movie database");
 
         // Fallback to mock data
-        const { movieDatabase } = await import("./movie-database");
-        return movieDatabase
+        const { popularMovies } = await import("./movie-database");
+        const fallbackList = await popularMovies(20, undefined, false); // fast (no enrich) pull
+        return fallbackList
             .sort(() => Math.random() - 0.5)
             .slice(0, 3)
             .map((movie) => ({

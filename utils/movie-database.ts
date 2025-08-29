@@ -15,6 +15,8 @@
  * - Client-side API keys are exposed. For production, front this with a Worker/Function proxy.
  */
 
+/// <reference types="vite/client" />
+
 import type { Movie } from "../App";
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY as string;
@@ -252,4 +254,38 @@ export async function top3ByQuery(
 ): Promise<Movie[]> {
     const list = await searchMovies(query, 10, region);
     return list.slice(0, 3);
+}
+
+/** Public: simple popular movies list (used for fallback) */
+export async function popularMovies(
+    take = 10,
+    region = REGION,
+    enrich = false
+): Promise<Movie[]> {
+    if (!TMDB_API_KEY) throw new Error("VITE_TMDB_API_KEY is missing");
+    // Popular endpoint
+    const [genreMap, data] = await Promise.all([
+        fetchGenreMap(),
+        getJSON<{ results: TmdbMovieLite[] }>(
+            withKey(`${TMDB_BASE}/movie/popular`, {
+                language: "en-US",
+                page: 1,
+            })
+        ),
+    ]);
+    const slice = data.results.slice(0, take);
+    if (!enrich) {
+        // Fast path: no trailer/providers (avoid extra calls in fallback scenarios)
+        return slice.map((m) => mapToMovie(m, genreMap));
+    }
+    const enriched = await Promise.all(
+        slice.map(async (m) => {
+            const [trailer, providers] = await Promise.all([
+                fetchTrailerUrl(m.id).catch(() => undefined),
+                fetchProviders(m.id, region).catch(() => []),
+            ]);
+            return mapToMovie(m, genreMap, trailer, providers);
+        })
+    );
+    return enriched;
 }
