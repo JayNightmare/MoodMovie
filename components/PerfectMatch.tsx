@@ -176,7 +176,7 @@ export function PerfectMatch({ movie, onBack, onTryAgain }: PerfectMatchProps) {
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
                     rows={4}
-                  />
+                  /> 
                 </div>
 
                 <Button 
