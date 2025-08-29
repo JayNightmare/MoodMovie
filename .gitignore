@@ -1,0 +1,20 @@
+# Node
+node_modules
+dist
+.DS_Store
+
+# Vite
+.vite
+*.log
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# PNPM
+pnpm-lock.yaml
+.pnpm-debug.log
+
+# Cloudflare
+.wrangler

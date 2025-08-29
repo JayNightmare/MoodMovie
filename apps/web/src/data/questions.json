@@ -1,0 +1,64 @@
+[
+  {
+    "id": "mood",
+    "question": "What’s your current mood?",
+    "answers": ["Chill", "Energetic", "Melancholic", "Curious", "Romantic", "Anxious", "Other"]
+  },
+  {
+    "id": "pace",
+    "question": "Pace preference?",
+    "answers": ["Slow burn", "Steady", "Fast"]
+  },
+  {
+    "id": "themes",
+    "question": "How heavy can themes get tonight?",
+    "answers": ["Light", "Mixed", "Heavy"]
+  },
+  {
+    "id": "laughs",
+    "question": "Do you want laughs?",
+    "answers": ["Yes please", "A bit", "No"]
+  },
+  {
+    "id": "scares",
+    "question": "Comfort level with scares?",
+    "answers": ["None", "Mild suspense", "Full horror"]
+  },
+  {
+    "id": "genres_include",
+    "question": "Pick up to 3 genres you want",
+    "answers": ["Drama", "Comedy", "Thriller", "Sci-Fi", "Fantasy", "Romance", "Action", "Mystery"],
+    "type": "multiselect"
+  },
+  {
+    "id": "genres_exclude",
+    "question": "Any genres to avoid?",
+    "answers": ["Drama", "Comedy", "Thriller", "Sci-Fi", "Fantasy", "Romance", "Action", "Mystery"],
+    "type": "multiselect"
+  },
+  {
+    "id": "era",
+    "question": "Modern or classic?",
+    "answers": ["Pre-2000", "2000-2010", "2010-2020", "Recent", "No preference"]
+  },
+  {
+    "id": "language",
+    "question": "Language preference?",
+    "answers": ["English", "Non-English ok", "Specific language"]
+  },
+  {
+    "id": "runtime",
+    "question": "Runtime target?",
+    "answers": ["< 90m", "90-120m", "> 120m", "No preference"]
+  },
+  {
+    "id": "violence",
+    "question": "Violence threshold?",
+    "answers": ["Avoid", "Mild ok", "Don’t mind"]
+  },
+  {
+    "id": "pick",
+    "question": "Crowd-pleaser vs critic pick?",
+    "answers": ["Crowd-pleaser", "Balanced", "Critic"]
+  }
+]

@@ -1,0 +1,8 @@
+name = "mood-movie-worker"
+main = "src/index.ts"
+compatibility_date = "2023-07-24"
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:3000,http://127.0.0.1:3000"
+PLAUSIBLE_DOMAIN = ""
+VITE_OPENROUTER_MODEL = "openrouter/anthropic/claude-3.5-sonnet"

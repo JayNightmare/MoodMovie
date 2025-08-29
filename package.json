@@ -1,0 +1,15 @@
+{
+  "name": "movie-picker",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "test": "pnpm --filter web test",
+    "lint": "pnpm --filter web lint",
+    "worker:dev": "pnpm --filter worker dev",
+    "worker:deploy": "pnpm --filter worker deploy"
+  },
+  "devDependencies": {
+    "pnpm": "^8.6.0"
+  }
+}
