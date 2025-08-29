@@ -1,115 +1,255 @@
-import { Movie } from '../App';
+/**
+ * movie-database.ts
+ *
+ * Purpose:
+ * - Replace the static movie array with live data from TMDb.
+ * - Provide search() and discover() that return your existing Movie[] shape.
+ * - Enrich results with genres, posters, TMDb rating, YouTube trailer URL, and watch providers.
+ * - Keep UI minimal; you decide how to rank/score matches.
+ *
+ * Requirements:
+ * - Add VITE_TMDB_API_KEY to your .env (client build-time var).
+ * - Optional: set VITE_TMDB_REGION (e.g., "GB") for provider lookup.
+ *
+ * Caveat:
+ * - Client-side API keys are exposed. For production, front this with a Worker/Function proxy.
+ */
 
-export const movieDatabase: Movie[] = [
-  {
-    id: '1',
-    title: 'Inception',
-    year: 2010,
-    genre: ['Sci-Fi', 'Thriller', 'Action'],
-    description: 'A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.8,
-    matchScore: 0,
-    streamingServices: ['Netflix', 'Amazon Prime', 'HBO Max'],
-    trailerUrl: 'https://www.youtube.com/watch?v=YoHD9XEInc0'
-  },
-  {
-    id: '2',
-    title: 'The Grand Budapest Hotel',
-    year: 2014,
-    genre: ['Comedy', 'Drama', 'Adventure'],
-    description: 'A writer encounters the owner of an aging high-class hotel, who tells him of his early years serving as a lobby boy in the hotel\'s glorious years under an exceptional concierge.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.1,
-    matchScore: 0,
-    streamingServices: ['Disney+', 'Hulu', 'Amazon Prime']
-  },
-  {
-    id: '3',
-    title: 'Mad Max: Fury Road',
-    year: 2015,
-    genre: ['Action', 'Adventure', 'Sci-Fi'],
-    description: 'In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the aid of a group of female prisoners, a psychotic worshipper, and a drifter named Max.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.1,
-    matchScore: 0,
-    streamingServices: ['HBO Max', 'Amazon Prime']
-  },
-  {
-    id: '4',
-    title: 'Her',
-    year: 2013,
-    genre: ['Romance', 'Drama', 'Sci-Fi'],
-    description: 'In a near future, a lonely writer develops an unlikely relationship with an operating system designed to meet his every need.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.0,
-    matchScore: 0,
-    streamingServices: ['Netflix', 'Amazon Prime']
-  },
-  {
-    id: '5',
-    title: 'Parasite',
-    year: 2019,
-    genre: ['Drama', 'Thriller', 'Dark Comedy'],
-    description: 'A poor family schemes to become employed by a wealthy family by infiltrating their household and posing as unrelated, highly qualified individuals.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.6,
-    matchScore: 0,
-    streamingServices: ['Hulu', 'Amazon Prime']
-  },
-  {
-    id: '6',
-    title: 'Spirited Away',
-    year: 2001,
-    genre: ['Animation', 'Adventure', 'Fantasy'],
-    description: 'During her family\'s move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 9.2,
-    matchScore: 0,
-    streamingServices: ['HBO Max', 'Netflix']
-  },
-  {
-    id: '7',
-    title: 'The Social Network',
-    year: 2010,
-    genre: ['Biography', 'Drama'],
-    description: 'As Harvard student Mark Zuckerberg creates the social networking site that would become known as Facebook, he is sued by the twins who claimed he stole their idea.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 7.7,
-    matchScore: 0,
-    streamingServices: ['Netflix', 'Amazon Prime']
-  },
-  {
-    id: '8',
-    title: 'Knives Out',
-    year: 2019,
-    genre: ['Comedy', 'Crime', 'Mystery'],
-    description: 'A detective investigates the death of a patriarch of an eccentric, combative family.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 7.9,
-    matchScore: 0,
-    streamingServices: ['Amazon Prime', 'Hulu']
-  },
-  {
-    id: '9',
-    title: 'Dune',
-    year: 2021,
-    genre: ['Adventure', 'Drama', 'Sci-Fi'],
-    description: 'Feature adaptation of Frank Herbert\'s science fiction novel about the son of a noble family entrusted with the protection of the most valuable asset and most vital element in the galaxy.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.0,
-    matchScore: 0,
-    streamingServices: ['HBO Max', 'Amazon Prime']
-  },
-  {
-    id: '10',
-    title: 'La La Land',
-    year: 2016,
-    genre: ['Comedy', 'Drama', 'Musical'],
-    description: 'While navigating their careers in Los Angeles, a pianist and an actress fall in love while attempting to reconcile their aspirations for the future.',
-    poster: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHBvc3RlciUyMGNpbmVtYXxlbnwxfHx8fDE3NTYzOTgyOTd8MA&ixlib=rb-4.1.0&q=80&w=400',
-    rating: 8.0,
-    matchScore: 0,
-    streamingServices: ['Netflix', 'Amazon Prime', 'Hulu']
-  }
-];
+import type { Movie } from "../App";
+
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY as string;
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+const REGION = (import.meta.env.VITE_TMDB_REGION as string) || "GB";
+
+type TmdbMovieLite = {
+    id: number;
+    title?: string;
+    name?: string;
+    release_date?: string;
+    first_air_date?: string;
+    overview: string;
+    poster_path: string | null;
+    genre_ids?: number[];
+    vote_average: number;
+};
+
+type TmdbMovieDetail = {
+    id: number;
+    title: string;
+    release_date?: string;
+    overview: string;
+    poster_path: string | null;
+    genres: { id: number; name: string }[];
+    vote_average: number;
+};
+
+type DiscoverSpec = {
+    withGenres?: number[];
+    withoutGenres?: number[];
+    yearFrom?: number;
+    yearTo?: number;
+    runtimeMin?: number;
+    runtimeMax?: number;
+    language?: string; // ISO-639-1
+    sortBy?:
+        | "popularity.desc"
+        | "vote_average.desc"
+        | "primary_release_date.desc";
+};
+
+const withKey = (
+    url: string,
+    params: Record<string, string | number | undefined> = {}
+) => {
+    const u = new URL(url);
+    u.searchParams.set("api_key", TMDB_API_KEY);
+    Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) u.searchParams.set(k, String(v));
+    });
+    return u.toString();
+};
+
+async function getJSON<T>(url: string): Promise<T> {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`TMDb error ${res.status}`);
+    return res.json() as Promise<T>;
+}
+
+async function fetchGenreMap(): Promise<Map<number, string>> {
+    const data = await getJSON<{ genres: { id: number; name: string }[] }>(
+        withKey(`${TMDB_BASE}/genre/movie/list`, { language: "en-US" })
+    );
+    return new Map(data.genres.map((g) => [g.id, g.name]));
+}
+
+function yearFromDate(d?: string): number | undefined {
+    if (!d) return undefined;
+    const y = Number(d.slice(0, 4));
+    return Number.isFinite(y) ? y : undefined;
+}
+
+function posterUrl(path: string | null): string {
+    return path
+        ? `${IMG_BASE}${path}`
+        : "https://placehold.co/400x600?text=No+Image";
+}
+
+async function fetchTrailerUrl(tmdbId: number): Promise<string | undefined> {
+    const data = await getJSON<{
+        results: { site: string; type: string; key: string }[];
+    }>(withKey(`${TMDB_BASE}/movie/${tmdbId}/videos`, { language: "en-US" }));
+    const trailer = data.results.find(
+        (v) => v.site === "YouTube" && v.type === "Trailer"
+    );
+    return trailer
+        ? `https://www.youtube.com/watch?v=${trailer.key}`
+        : undefined;
+}
+
+async function fetchProviders(
+    tmdbId: number,
+    region = REGION
+): Promise<string[]> {
+    const data = await getJSON<{
+        results: Record<
+            string,
+            {
+                flatrate?: { provider_name: string }[];
+                rent?: { provider_name: string }[];
+                buy?: { provider_name: string }[];
+            }
+        >;
+    }>(withKey(`${TMDB_BASE}/movie/${tmdbId}/watch/providers`));
+    const r = data.results?.[region];
+    if (!r) return [];
+    const names = new Set<string>();
+    (r.flatrate || []).forEach((p) => names.add(p.provider_name));
+    (r.rent || []).forEach((p) => names.add(p.provider_name));
+    (r.buy || []).forEach((p) => names.add(p.provider_name));
+    return [...names];
+}
+
+function mapToMovie(
+    m: TmdbMovieLite | TmdbMovieDetail,
+    genreMap: Map<number, string>,
+    trailerUrl?: string,
+    providers: string[] = []
+): Movie {
+    const title = (m as any).title || (m as any).name || "Untitled";
+    const y =
+        "release_date" in m
+            ? yearFromDate(m.release_date)
+            : "first_air_date" in m
+            ? yearFromDate((m as any).first_air_date)
+            : undefined;
+    const g: string[] =
+        "genres" in m && Array.isArray((m as any).genres)
+            ? ((m as any).genres as { id: number; name: string }[]).map(
+                  (x) => x.name
+              )
+            : Array.isArray((m as any).genre_ids)
+            ? ((m as any).genre_ids as number[]).map(
+                  (id) => genreMap.get(id) || "Unknown"
+              )
+            : [];
+    return {
+        id: String((m as any).id),
+        title,
+        year: y || 0,
+        genre: g,
+        description: m.overview || "",
+        poster: posterUrl(m.poster_path ?? null),
+        rating: Number((m as any).vote_average?.toFixed?.(1) ?? 0),
+        matchScore: 0,
+        streamingServices: providers,
+        trailerUrl,
+    };
+}
+
+/** Public: search by free text (e.g., user typed “blade runner”) */
+export async function searchMovies(
+    query: string,
+    take = 10,
+    region = REGION
+): Promise<Movie[]> {
+    if (!TMDB_API_KEY) throw new Error("VITE_TMDB_API_KEY is missing");
+    const [genreMap, searchData] = await Promise.all([
+        fetchGenreMap(),
+        getJSON<{ results: TmdbMovieLite[] }>(
+            withKey(`${TMDB_BASE}/search/movie`, {
+                query,
+                include_adult: "false",
+                language: "en-US",
+                page: 1,
+            })
+        ),
+    ]);
+
+    const slice = searchData.results.slice(0, take);
+    const enriched = await Promise.all(
+        slice.map(async (m) => {
+            const [trailer, providers] = await Promise.all([
+                fetchTrailerUrl(m.id),
+                fetchProviders(m.id, region),
+            ]);
+            return mapToMovie(m, genreMap, trailer, providers);
+        })
+    );
+    return enriched;
+}
+
+/** Public: discover with filters (genres, years, runtime, sort) */
+export async function discoverMovies(
+    spec: DiscoverSpec = {},
+    take = 10,
+    region = REGION
+): Promise<Movie[]> {
+    if (!TMDB_API_KEY) throw new Error("VITE_TMDB_API_KEY is missing");
+    const params: Record<string, string | number | undefined> = {
+        include_adult: "false",
+        include_video: "false",
+        language: "en-US",
+        page: 1,
+        sort_by: spec.sortBy || "popularity.desc",
+        with_genres: spec.withGenres?.join(","),
+        without_genres: spec.withoutGenres?.join(","),
+        "primary_release_date.gte": spec.yearFrom
+            ? `${spec.yearFrom}-01-01`
+            : undefined,
+        "primary_release_date.lte": spec.yearTo
+            ? `${spec.yearTo}-12-31`
+            : undefined,
+        "with_runtime.gte": spec.runtimeMin,
+        "with_runtime.lte": spec.runtimeMax,
+        with_original_language: spec.language,
+    };
+
+    const [genreMap, data] = await Promise.all([
+        fetchGenreMap(),
+        getJSON<{ results: TmdbMovieLite[] }>(
+            withKey(`${TMDB_BASE}/discover/movie`, params)
+        ),
+    ]);
+
+    const slice = data.results.slice(0, take);
+    const enriched = await Promise.all(
+        slice.map(async (m) => {
+            const [trailer, providers] = await Promise.all([
+                fetchTrailerUrl(m.id),
+                fetchProviders(m.id, region),
+            ]);
+            return mapToMovie(m, genreMap, trailer, providers);
+        })
+    );
+    return enriched;
+}
+
+/** Convenience: get top 3 picks, then you can set matchScore separately */
+export async function top3ByQuery(
+    query: string,
+    region = REGION
+): Promise<Movie[]> {
+    const list = await searchMovies(query, 10, region);
+    return list.slice(0, 3);
+}
