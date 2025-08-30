@@ -62,9 +62,10 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --border: oklch(86.995% 0.0001 271.152);
+  --input: oklch(80.78% 0.00009 271.152);
+  --input-background: oklch(20.576% 0 0);
+  --ring: oklch(100% 0.00011 271.152);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --chart-1: oklch(0.488 0.243 264.376);
@@ -78,8 +79,12 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-border: oklch(70.576% 0.00008 271.152);
   --sidebar-ring: oklch(0.439 0 0);
+  --tw-shadow-replace: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -4px rgba(255, 255, 255, 1) !important;
+  --tw-shadow-color: oklch(100% 0.00011 271.152) !important;
+  --tw-ring-offset-shadow: oklch(100% 0.00011 271.152) !important;
+  --tw-ring-shadow: oklch(100% 0.00011 271.152) !important;
 }
 
 @theme inline {
@@ -191,6 +196,12 @@
 html {
   font-size: var(--font-size);
 }
+
+.dark .shadow-lg {
+  --tw-shadow: var(--tw-shadow-replace);
+}
+
+.dark textarea {}
 
 /* Utility classes */
 @layer utilities {

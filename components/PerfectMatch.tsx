@@ -176,7 +176,11 @@ export function PerfectMatch({ movie, onBack, onTryAgain }: PerfectMatchProps) {
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
                     rows={4}
-                  /> 
+                    maxLength={250}
+                  />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {review.length} / 250
+                  </p>
                 </div>
 
                 <Button 
