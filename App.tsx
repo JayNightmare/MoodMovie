@@ -3,6 +3,7 @@ import { QuestionFlow } from './components/QuestionFlow';
 import { Results } from './components/Results';
 import { PerfectMatch } from './components/PerfectMatch';
 import { ThemeToggle } from './components/ThemeToggle';
+import { Funding } from './components/Funding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 export type UserResponse = {
@@ -70,6 +71,7 @@ export default function App() {
     <ErrorBoundary onReset={handleTryAgain}>
   <div className="min-h-screen bg-background transition-colors duration-300">
         <header className="w-full flex items-center justify-end p-4 gap-2">
+          <Funding />
           <ThemeToggle />
         </header>
         {appState === 'questioning' && (
