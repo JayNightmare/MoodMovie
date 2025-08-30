@@ -197,7 +197,7 @@ export function QuestionFlow({ onComplete, initialResponses = [] }: QuestionFlow
         </Card>
 
         <div className="text-center text-sm text-muted-foreground">
-          Question {responses.length + 1} of {totalQuestions}
+          Question {Math.min(responses.length ? responses.length + 1 : 1, 5)} of {totalQuestions}
         </div>
       </div>
     </div>

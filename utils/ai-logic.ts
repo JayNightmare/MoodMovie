@@ -141,51 +141,9 @@ export async function getQuestionSet(
 export async function shouldStopQuestioning(
     responses: UserResponse[]
 ): Promise<boolean> {
-    try {
-        // Always stop after 5 questions
-        if (responses.length >= 5) return true;
-
-        // For first 2 questions, never stop
-        if (responses.length < 3) return false;
-
-        console.log("Checking if should stop for responses:", responses);
-
-        const response = await fetch(
-            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/should-stop`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${supabaseAnonKey}`,
-                },
-                body: JSON.stringify({ responses }),
-            }
-        );
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(
-                "Should-stop server error:",
-                response.status,
-                response.statusText,
-                errorText
-            );
-            throw new Error(
-                `Server error: ${response.status} ${response.statusText}`
-            );
-        }
-
-        const data = await response.json();
-        console.log("Should stop response:", data);
-
-        return data.shouldStop || responses.length >= 4;
-    } catch (error) {
-        console.error("Error checking if should stop:", error);
-        // Fallback logic
-        const fallbackDecision = responses.length >= 4;
-        console.log("Using fallback decision:", fallbackDecision);
-        return fallbackDecision;
-    }
+    // Updated per requirement: always present all 5 questions.
+    // Only stop AFTER 5 responses have been collected.
+    return responses.length >= 5;
 }
 
 export async function getMovieRecommendations(
