@@ -19,7 +19,27 @@
 
 import type { Movie } from "../App";
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY as string;
+// Support both browser (Vite) and Supabase Edge (Deno) environments.
+// Deno global may not exist in browser builds, so guarded access.
+// Priority: explicit TMDB_API_KEY (server) -> VITE_TMDB_API_KEY -> empty string.
+// (Server should set TMDB_API_KEY to avoid exposing client key.)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const Deno: any; // in browser this is undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _maybeDeno: any = typeof Deno !== "undefined" ? Deno : undefined;
+// import.meta is available in ESM; fallback object for safety
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _maybeImportMeta: any = { env: {} };
+try {
+    // @ts-ignore
+    _maybeImportMeta = import.meta || { env: {} };
+} catch (_) {
+    /* ignore */
+}
+const TMDB_API_KEY = (_maybeDeno?.env?.get?.("TMDB_API_KEY") ||
+    _maybeDeno?.env?.get?.("VITE_TMDB_API_KEY") ||
+    _maybeImportMeta?.env?.VITE_TMDB_API_KEY ||
+    "") as string;
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 const REGION = (import.meta.env.VITE_TMDB_REGION as string) || "GB";

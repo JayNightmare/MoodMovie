@@ -10,9 +10,11 @@ interface ResultsProps {
   movies: Movie[];
   onTryAgain: () => void;
   onPerfectMatch: (movie: Movie) => void;
+  onContinueQuestions?: () => void;
+  partial?: boolean; // indicates recommendations came from early stop
 }
 
-export function Results({ movies, onTryAgain, onPerfectMatch }: ResultsProps) {
+export function Results({ movies, onTryAgain, onPerfectMatch, onContinueQuestions, partial }: ResultsProps) {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -89,15 +91,21 @@ export function Results({ movies, onTryAgain, onPerfectMatch }: ResultsProps) {
           ))}
         </div>
 
-        <div className="text-center pt-8">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 pt-8">
+          {partial && onContinueQuestions && (
+            <Button onClick={onContinueQuestions} className="gap-2" variant="default">
+              Continue Questions
+            </Button>
+          )}
           <Button variant="outline" onClick={onTryAgain} className="gap-2">
             <RefreshCw className="h-4 w-4" />
             Try Again
           </Button>
         </div>
 
-        <div className="text-center text-sm text-muted-foreground pb-8">
-          Not finding what you're looking for? Try answering the questions differently for new recommendations.
+        <div className="text-center text-sm text-muted-foreground pb-8 space-y-1">
+          <p>Not finding what you're looking for? Try answering the questions differently for new recommendations.</p>
+          {partial && <p>You stopped early. Continue the remaining questions for a more precise match.</p>}
         </div>
       </div>
     </div>

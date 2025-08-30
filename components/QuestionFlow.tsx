@@ -12,20 +12,14 @@ import {
 import { Question } from "../types/questions";
 
 interface QuestionFlowProps {
-  onComplete: (
-    responses: UserResponse[],
-    movies: Movie[],
-  ) => void;
+  onComplete: (responses: UserResponse[], movies: Movie[]) => void;
+  initialResponses?: UserResponse[]; // resume mode
 }
 
-export function QuestionFlow({
-  onComplete,
-}: QuestionFlowProps) {
+export function QuestionFlow({ onComplete, initialResponses = [] }: QuestionFlowProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [responses, setResponses] = useState<UserResponse[]>(
-    [],
-  );
+  const [responses, setResponses] = useState<UserResponse[]>(initialResponses);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const totalQuestions = questions.length || 5; // default to 5 for progress baseline
@@ -44,9 +38,10 @@ export function QuestionFlow({
         );
       }
 
-  const questionSet = await getQuestionSet(responses);
-  setQuestions(questionSet);
-  setCurrentIndex(0);
+    const questionSet = await getQuestionSet(responses);
+    setQuestions(questionSet);
+    // If resuming, set current index to number of responses (bounded)
+    setCurrentIndex(Math.min(responses.length, questionSet.length - 1));
       setIsLoading(false);
     };
     loadFirstQuestion();
@@ -76,9 +71,9 @@ export function QuestionFlow({
 
     // Check if we should stop questioning
     // Determine if we should stop early (still allow AI to shorten flow)
-    const shouldStop = await shouldStopQuestioning(updatedResponses);
+  const shouldStop = await shouldStopQuestioning(updatedResponses);
 
-    if (shouldStop || currentIndex >= questions.length - 1) {
+  if (shouldStop || currentIndex >= questions.length - 1) {
       const movies = await getMovieRecommendations(updatedResponses);
       onComplete(updatedResponses, movies);
     } else {
