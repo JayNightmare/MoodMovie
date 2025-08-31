@@ -22,6 +22,8 @@ export function QuestionFlow({ onComplete, initialResponses = [] }: QuestionFlow
   const [responses, setResponses] = useState<UserResponse[]>(initialResponses);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [customInput, setCustomInput] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const totalQuestions = questions.length || 5; // default to 5 for progress baseline
 
   useEffect(() => {
@@ -127,12 +129,13 @@ export function QuestionFlow({ onComplete, initialResponses = [] }: QuestionFlow
                       key={option.value}
                       variant="outline"
                       className="h-auto p-4 text-left justify-start"
-                      onClick={() =>
-                        handleAnswer(
-                          option.value,
-                          option.weight,
-                        )
-                      }
+                      onClick={() => {
+                        if (option.value === 'custom') {
+                          setShowCustomInput(true);
+                          return;
+                        }
+                        handleAnswer(option.value, option.weight);
+                      }}
                       disabled={isLoading}
                     >
                       <div>
@@ -147,6 +150,37 @@ export function QuestionFlow({ onComplete, initialResponses = [] }: QuestionFlow
                       </div>
                     </Button>
                   ))}
+                  {showCustomInput && (
+                    <div className="space-y-2 p-4 border rounded-md">
+                      <input
+                        className="w-full px-3 py-2 rounded-md bg-background border"
+                        placeholder="Describe your current mood..."
+                        value={customInput}
+                        onChange={(e) => setCustomInput(e.target.value)}
+                        disabled={isLoading}
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          onClick={() => { setShowCustomInput(false); setCustomInput(''); }}
+                          disabled={isLoading}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            if (!customInput.trim()) return;
+                            handleAnswer(`custom:${customInput.trim()}`);
+                          }}
+                          disabled={isLoading}
+                        >
+                          Save Mood
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

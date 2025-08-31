@@ -50,6 +50,18 @@ const fallbackQuestions: Question[] = [
                 description: "Want to learn or be challenged",
                 weight: 4,
             },
+            {
+                label: "Tired & Want Something Light",
+                value: "tired",
+                description: "Low energy – something easy",
+                weight: 2,
+            },
+            {
+                label: "Something else...",
+                value: "custom",
+                description: "Let me type my mood",
+                weight: 1,
+            },
         ],
     },
     {
@@ -199,6 +211,33 @@ export async function getMovieRecommendations(
                 ...movie,
                 matchScore: Math.floor(Math.random() * 30) + 70, // 70-100
             }));
+    }
+}
+
+// Retrieve additional movies (expansion) excluding existing IDs
+export async function getMoreMovies(
+    responses: UserResponse[],
+    excludeIds: (string | number)[]
+): Promise<Movie[]> {
+    try {
+        const response = await fetch(
+            `https://${supabaseProjectId}.supabase.co/functions/v1/make-server-4bf7affd/recommendations`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${supabaseAnonKey}`,
+                },
+                body: JSON.stringify({ responses, expand: true, excludeIds }),
+            }
+        );
+        if (!response.ok) throw new Error("Expand recommendations failed");
+        const data = await response.json();
+        if (Array.isArray(data.movies)) return data.movies as Movie[];
+        return [];
+    } catch (e) {
+        console.error("Error expanding movies", e);
+        return [];
     }
 }
 

@@ -1,26 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
-import { Star, RefreshCw, Heart } from 'lucide-react';
+import { Star, RefreshCw, Heart, Plus } from 'lucide-react';
 import { Movie } from '../App';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { getMoreMovies } from '../utils/ai-logic';
+import { UserResponse } from '../App';
 
 interface ResultsProps {
   movies: Movie[];
   onTryAgain: () => void;
   onPerfectMatch: (movie: Movie) => void;
-  onContinueQuestions?: () => void;
   partial?: boolean; // indicates recommendations came from early stop
+  showAds?: boolean;
+  setMovies?: (m: Movie[]) => void;
+  responses?: UserResponse[];
 }
 
-export function Results({ movies, onTryAgain, onPerfectMatch, onContinueQuestions, partial }: ResultsProps) {
+export function Results({ movies, onTryAgain, onPerfectMatch, partial, showAds, setMovies, responses = [] }: ResultsProps) {
+  const [expansions, setExpansions] = useState(0);
+  const [isExpanding, setIsExpanding] = useState(false);
+  const maxExpansions = 3;
+
+  const handleExpand = async () => {
+    if (isExpanding || expansions >= maxExpansions) return;
+    if (!setMovies) return;
+    setIsExpanding(true);
+    try {
+      const more = await getMoreMovies(responses, movies.map(m=>m.id));
+      if (more.length) {
+        // Deduplicate by id
+        const existing = new Set(movies.map(m=>m.id));
+        const merged = [...movies];
+        for (const mv of more) if (!existing.has(mv.id)) merged.push(mv);
+        setMovies(merged.slice(0, 12));
+        setExpansions(e => e + 1);
+      }
+    } finally {
+      setIsExpanding(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-4 pt-8">
           <h1 className="text-3xl font-medium">Your Perfect Movie Matches</h1>
-          <p className="text-muted-foreground">Based on your preferences, here are our top 3 recommendations</p>
+          <p className="text-muted-foreground">Based on your preferences, here are your recommendations{movies.length>3?` (${movies.length} shown)`:''}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -92,9 +118,11 @@ export function Results({ movies, onTryAgain, onPerfectMatch, onContinueQuestion
         </div>
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 pt-8">
-          {partial && onContinueQuestions && (
-            <Button onClick={onContinueQuestions} className="gap-2" variant="default">
-              Continue Questions
+          {expansions < maxExpansions && (
+            <Button onClick={handleExpand} variant="secondary" disabled={isExpanding} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {isExpanding ? 'Loading more...' : 'Show More'}
+              {expansions>0 && <span className="text-xs opacity-70">({maxExpansions-expansions} left)</span>}
             </Button>
           )}
           <Button variant="outline" onClick={onTryAgain} className="gap-2">
